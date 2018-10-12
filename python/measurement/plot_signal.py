@@ -2,6 +2,7 @@ from pico_utils import *
 
 ps = open_pico()
 configure_channel(ps, 'A')
+configure_channel(ps, 'B')
 (sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 1)
 dataarr = getData(ps, nSamples, channels='AB')
 dataA, dataB = dataarr[0], dataarr[1]
@@ -14,8 +15,9 @@ dataTimeAxis = np.arange(nSamples) * sampling_interval
 # plt.ion()
 
 fig, ax = plt.subplots()
-ax.plot(dataTimeAxis, dataA, label="Clock")
-ax.grid(True, which='major')
+ax.plot(dataTimeAxis, dataA, label="A")
+ax.plot(dataTimeAxis, dataB, label="B")
+# ax.grid(True, which='major')
 ax.set_title("Picoscope 2000 waveforms")
 ax.set_ylabel("Voltage (V)")
 ax.set_xlabel("Time (ms)")

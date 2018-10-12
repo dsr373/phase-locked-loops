@@ -29,7 +29,7 @@ def configure_channel(ps, ch_name):
 
 def configure_sampling(ps, desired_duration):
     obs_duration = 3.0 * desired_duration
-    sampling_interval = obs_duration / 8192
+    sampling_interval = obs_duration / 4096
 
     (actualSamplingInterval, nSamples, maxSamples) = ps.setSamplingInterval(sampling_interval, obs_duration)
     print("Sampling interval = %f ns" % (actualSamplingInterval * 1E9))
@@ -37,6 +37,7 @@ def configure_sampling(ps, desired_duration):
     print("Maximum samples = %d" % maxSamples)
 
     return (actualSamplingInterval, nSamples, maxSamples)
+
 
 def getData(ps, nSamples, channels='AB'):
     ps.runBlock()
