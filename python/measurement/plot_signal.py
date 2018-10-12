@@ -1,4 +1,7 @@
-from pico_utils import *
+import matplotlib.pyplot as plt
+import numpy as np
+
+from pico_utils import open_pico, configure_channel, configure_sampling, getData
 
 ps = open_pico()
 configure_channel(ps, 'A')
