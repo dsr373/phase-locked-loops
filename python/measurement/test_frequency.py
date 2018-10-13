@@ -1,29 +1,26 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import time
-import serial
 
 from pico_utils import open_pico, configure_channel, configure_sampling, getData
+from serial_utils import send_command
+
+# set constants
+frequency = float(raw_input('Enter frequency (Hz): '))
+half_p = 5e5/frequency
 
 # send half-period to arduino
-ser = serial.Serial('/dev/ttyACM0', 9600)
-print('opened ' + ser.name)
-
-time.sleep(1)
-ser.setDTR(value=0)
-time.sleep(1)
-
-ser.write('10000')
-print(ser.readline().strip())
-print(ser.readline().strip())
+print("Sending stuff to ARDUINO")
+send_command(half_p=half_p)
 
 # read signal
+print("\n\n")
 ps = open_pico()
 configure_channel(ps, 'A')
 configure_channel(ps, 'B')
-(sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 2)
-dataarr = getData(ps, nSamples, channels='A')
-dataA = dataarr[0]
+
+(sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 2*half_p/1e6)
+
+dataA = getData(ps, nSamples, channel='A')
 ps.stop()
 ps.close()
 

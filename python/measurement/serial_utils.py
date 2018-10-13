@@ -9,6 +9,7 @@ ser.setDTR(value=0)
 time.sleep(1)
 
 def send_command(half_p=125000):
-    ser.write(str(half_p))
-    print(ser.readline().strip())
-    print(ser.readline().strip())
+    ser.write(bytes(half_p))    # test??
+    time.sleep(1)
+    print("ARDUINO: " + ser.readline().strip())
+    print("ARDUINO: " + ser.readline().strip())

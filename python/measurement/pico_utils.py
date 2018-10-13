@@ -28,23 +28,21 @@ def configure_channel(ps, ch_name):
 
 
 def configure_sampling(ps, desired_duration):
+    print("\n" + "="*15 + " SAMPLING " + "="*15)
+
     obs_duration = 3.0 * desired_duration
     sampling_interval = obs_duration / 4096
 
     (actualSamplingInterval, nSamples, maxSamples) = ps.setSamplingInterval(sampling_interval, obs_duration)
-    print("Sampling interval = %f ns" % (actualSamplingInterval * 1E9))
+    print("Sampling interval = %f ms" % (actualSamplingInterval * 1E3))
     print("Taking  samples = %d" % nSamples)
     print("Maximum samples = %d" % maxSamples)
 
     return (actualSamplingInterval, nSamples, maxSamples)
 
 
-def getData(ps, nSamples, channels='AB'):
+def getData(ps, nSamples, channel='A'):
     ps.runBlock()
     ps.waitReady()
-    print("Done waiting for trigger")
-    dataarr = []
-    for ch in channels:
-        dataarr.append(ps.getDataV(ch, nSamples, returnOverflow=False))
-
-    return dataarr
+    print("Done waiting for trigger on %s" % channel)
+    return ps.getDataV(channel, nSamples, returnOverflow=False)
