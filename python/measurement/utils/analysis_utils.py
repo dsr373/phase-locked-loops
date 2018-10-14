@@ -9,7 +9,7 @@ def basic_frequency(freqs, spectrum):
     """
     return freqs[np.argmax(spectrum[1:])]
 
-def frequency(freqs, raw_spectrum):
+def calc_frequency(freqs, raw_spectrum):
     """
     :param freqs: array of frequency values, same size as spectrum
     :param raw_spectrum: array of intensity values, usually the output of a fourier transform. Must be same size as freqs

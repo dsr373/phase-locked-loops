@@ -1,4 +1,4 @@
-from analysis_utils import frequency
+from utils.analysis_utils import frequency
 import matplotlib.pyplot as plt
 import numpy as np
 

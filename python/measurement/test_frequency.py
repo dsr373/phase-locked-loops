@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from pico_utils import open_pico, configure_channel, configure_sampling, getData
-from serial_utils import send_command
+from utils.pico_utils import open_pico, configure_channel, configure_sampling, getData
+from utils.serial_utils import send_command
 
 # set constants
 frequency = float(raw_input('Enter frequency (Hz): '))

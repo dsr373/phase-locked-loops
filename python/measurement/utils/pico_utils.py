@@ -25,6 +25,7 @@ def configure_channel(ps, ch_name):
     print("Chosen channel %s range = %d" % (ch_name, channelRange))
     # set the trigger
     ps.setSimpleTrigger(ch_name, 1.0, 'Falling', timeout_ms=100, enabled=True)
+    return channelRange
 
 
 def configure_sampling(ps, desired_duration):
