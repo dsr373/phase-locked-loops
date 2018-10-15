@@ -25,9 +25,9 @@ def calc_frequency(freqs, raw_spectrum):
     xs = [freqs[i] for i in idxs]
     ys = [spectrum[i] for i in idxs]
 
-    # print('indices %s' % idxs)
-    # print('frequencies %s' % xs)
-    # print('spectrum %s' % ys)
+    print('indices %s' % idxs)
+    print('frequencies %s' % xs)
+    print('spectrum %s' % ys)
 
     # interpolate
     poly = interpolate.BarycentricInterpolator(xs, ys)
