@@ -38,18 +38,19 @@ def configure_sampling(ps, signal_duration):
     print("\n" + "="*15 + " SAMPLING " + "="*15)
 
     obs_duration = 50 * signal_duration
-    sampling_interval = obs_duration / 2048
+    sampling_interval = obs_duration / 8000
 
     (actualSamplingInterval, nSamples, maxSamples) = ps.setSamplingInterval(sampling_interval, obs_duration)
     print("Sampling interval = %f ms" % (actualSamplingInterval * 1E3))
     print("Taking  samples = %d" % nSamples)
     print("Maximum samples = %d" % maxSamples)
 
+    print("\n" + "="*40)
     return (actualSamplingInterval, nSamples, maxSamples)
 
 
 def getData(ps, nSamples, channel='A'):
     ps.runBlock()
     ps.waitReady()
-    print("Done waiting for trigger on %s" % channel)
+    print("Done waiting for trigger")
     return ps.getDataV(channel, nSamples, returnOverflow=False)
