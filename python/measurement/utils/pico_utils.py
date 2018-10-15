@@ -29,10 +29,16 @@ def configure_channel(ps, ch_name, VRange=10):
 
 
 def configure_sampling(ps, signal_duration):
+    """
+    Configure the sampling rate and the duration of a sample.
+    :param signal_duration: the period of the signal, in seconds
+    :param ps: the picoscope object
+    """
+
     print("\n" + "="*15 + " SAMPLING " + "="*15)
 
-    obs_duration = 3.0 * signal_duration
-    sampling_interval = obs_duration / 4096
+    obs_duration = 50 * signal_duration
+    sampling_interval = obs_duration / 2048
 
     (actualSamplingInterval, nSamples, maxSamples) = ps.setSamplingInterval(sampling_interval, obs_duration)
     print("Sampling interval = %f ms" % (actualSamplingInterval * 1E3))
