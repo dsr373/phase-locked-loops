@@ -8,8 +8,14 @@ time.sleep(1)
 ser.setDTR(value=0)
 time.sleep(1)
 
-def send_command(half_p=125000):
-    ser.write(bytes(half_p))    # test??
-    time.sleep(1)
-    print("ARDUINO: " + ser.readline().strip())
-    print("ARDUINO: " + ser.readline().strip())
+def send_command(half_p=None, phase_diff=None):
+    if half_p is not None:
+        ser.write("f" + bytes(half_p))    # test??
+        time.sleep(1)
+        print("ARDUINO: " + ser.readline().strip())
+        print("ARDUINO: " + ser.readline().strip())
+    if phase_diff is not None:
+        ser.write("p" + bytes(phase_diff))
+        time.sleep(1)
+        print("ARDUINO: " + ser.readline().strip())
+        print("ARDUINO: " + ser.readline().strip())
