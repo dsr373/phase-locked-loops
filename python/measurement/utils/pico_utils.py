@@ -19,19 +19,19 @@ def open_pico():
     print(ps.getAllUnitInfo())
     return ps
 
-def configure_channel(ps, ch_name):
+def configure_channel(ps, ch_name, VRange=10):
     # the setChannel command will chose the next largest amplitude
-    channelRange = ps.setChannel(ch_name, 'DC', VRange=10, VOffset=0.0, enabled=True, BWLimited=False, probeAttenuation=10)
+    channelRange = ps.setChannel(ch_name, 'DC', VRange=VRange, VOffset=0.0, enabled=True, BWLimited=False, probeAttenuation=10)
     print("Chosen channel %s range = %d" % (ch_name, channelRange))
     # set the trigger
-    ps.setSimpleTrigger(ch_name, 1.0, 'Falling', timeout_ms=100, enabled=True)
+    # ps.setSimpleTrigger(ch_name, 1.0, 'Falling', timeout_ms=100, enabled=True)
     return channelRange
 
 
-def configure_sampling(ps, desired_duration):
+def configure_sampling(ps, signal_duration):
     print("\n" + "="*15 + " SAMPLING " + "="*15)
 
-    obs_duration = 3.0 * desired_duration
+    obs_duration = 3.0 * signal_duration
     sampling_interval = obs_duration / 4096
 
     (actualSamplingInterval, nSamples, maxSamples) = ps.setSamplingInterval(sampling_interval, obs_duration)
