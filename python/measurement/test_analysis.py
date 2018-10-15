@@ -1,4 +1,4 @@
-from utils.analysis_utils import frequency
+from utils.analysis_utils import calc_frequency
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -12,5 +12,5 @@ with open('data/fourier.csv') as fin:
 print(freqs[0:6])
 print(spectrum[0:6])
 
-print('Frequency = %f Hz' % frequency(freqs, spectrum))
+print('Frequency = %f Hz' % calc_frequency(freqs, spectrum))
 # frequency(freqs, spectrum)

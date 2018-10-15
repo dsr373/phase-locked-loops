@@ -8,17 +8,17 @@ from utils.analysis_utils import calc_frequency
 # set constants
 frequency = float(raw_input('Enter frequency (Hz): '))
 nRuns = int(raw_input('Number of runs: '))
-half_p = 5e5/frequency  # in microseconds
+half_p_us = 5e5/frequency  # in microseconds
 
 # send half-period to arduino
 print("Sending to ARDUINO")
-send_command(half_p=half_p)
+send_command(half_p=half_p_us)
 
 # set up scope
 print("\n\n")
 ps = open_pico()
 configure_channel(ps, 'A')
-(sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 2*half_p/1e6)
+(sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 2*half_p_us/1e6)
 freqs = np.fft.fftfreq(nSamples, sampling_interval)
 
 fig, [ax1, ax2] = plt.subplots(ncols=1, nrows=2)
@@ -33,8 +33,8 @@ for i in range(nRuns):
     fhz = calc_frequency(freqs, spectrum)
     print('Frequency: %f Hz' % fhz)
 
-    v_line.update_ydata(dataA)
-    f_line.update_ydata(spectrum)
+    v_line.set_ydata(dataA)
+    f_line.set_ydata(abs(spectrum))
     fig.canvas.draw()
 
 ps.stop()

@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from pico_utils import open_pico, configure_channel, configure_sampling, getData
+from utils.pico_utils import open_pico, configure_channel, configure_sampling, getData
 
 ps = open_pico()
 configure_channel(ps, 'A')
 configure_channel(ps, 'B')
+ps.setSimpleTrigger('A', 1.0, 'Falling', timeout_ms=100, enabled=True)
 (sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 1)
 dataA = getData(ps, nSamples, channel='A')
 dataB = getData(ps, nSamples, channel='B')
