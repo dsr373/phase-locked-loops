@@ -37,16 +37,37 @@ def configure_sampling(ps, signal_duration):
 
     print("\n" + "="*15 + " SAMPLING " + "="*15)
 
-    obs_duration = 50 * signal_duration
-    sampling_interval = obs_duration / 8000
+    obs_duration = 100 * signal_duration
+    sampling_interval = obs_duration / 4096
 
     (actualSamplingInterval, nSamples, maxSamples) = ps.setSamplingInterval(sampling_interval, obs_duration)
     print("Sampling interval = %f ms" % (actualSamplingInterval * 1E3))
     print("Taking  samples = %d" % nSamples)
     print("Maximum samples = %d" % maxSamples)
 
-    print("\n" + "="*40)
+    print('='*40 + '\n')
     return (actualSamplingInterval, nSamples, maxSamples)
+
+
+def alt_configure_sampling(ps, signal_duration):
+    """
+    Configure the sampling rate and the duration of a sample. Use this when you need really fine frequency data.
+    :param signal_duration: the period of the signal, in seconds
+    :param ps: the picoscope object
+    """
+
+    print("\n" + "="*15 + " ALT SAMPLING " + "="*15)
+    signal_freq = 1.0/signal_duration
+    sample_freq = 10 * signal_freq
+    nSamples = 4096
+
+    (actualSamplingFreq, maxSamples) = ps.setSamplingFrequency(sample_freq, nSamples)
+    print("Sampling frequency = %f Hz" % (actualSamplingFreq))
+    print("Taking  samples = %d" % nSamples)
+    print("Maximum samples = %d" % maxSamples)
+
+    print('='*44 + '\n')
+    return (1.0/actualSamplingFreq, nSamples, maxSamples)
 
 
 def getData(ps, nSamples, channel='A'):

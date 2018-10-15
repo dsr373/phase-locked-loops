@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from utils.pico_utils import open_pico, configure_channel, configure_sampling, getData
+from utils.pico_utils import open_pico, configure_channel, configure_sampling, alt_configure_sampling, getData
 from utils.serial_utils import send_command
 from utils.analysis_utils import calc_frequency
 from utils.plotting_utils import set_as_freq, set_as_time
@@ -22,7 +22,7 @@ configure_channel(ps, 'A')
 configure_channel(ps, 'B')
 ps.setSimpleTrigger('A', 1.0, 'Falling', timeout_ms=100, enabled=True)
 
-(sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 2*half_p_us/1e6)
+(sampling_interval, nSamples, maxSamples) = alt_configure_sampling(ps, 2*half_p_us/1e6)
 
 dataA = getData(ps, nSamples, channel='A')
 dataB = getData(ps, nSamples, channel='B')
