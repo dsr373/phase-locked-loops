@@ -8,7 +8,7 @@ unsigned long t = 125; // wait time
 unsigned long phase_diff = 0; // the phase difference in 10^-4 of 180 degrees (i.e. 1e4 -> 180 deg)
 String string_read; // value read from serial
 
-unsigned long t1_ahead, t2_behind; // the time that only 
+unsigned long t_ahead, t_behind; // the time that only 
 
 // global constants
 const int pin = 13; // the pin to generate the signal on
@@ -19,6 +19,7 @@ const int bitmask = pinmask | pinmask2 ; // the port covers bits from 8 to 13, s
 
 // the function pointer to use to wait
 void (*waitfunc)(unsigned long) = &delay;
+void (*cycle_func)() = &pin1_first;
 
 void setup() {
   DDRB = bitmask;
@@ -37,14 +38,7 @@ void loop() {
   }
 
   // on and off
-  PORTB = pinmask;      // set pin 1
-  waitfunc(t1_ahead);   // wait a fraction of t
-  PORTB = bitmask;      // set both
-  waitfunc(t2_behind);  // wait the rest of t
-  PORTB = pinmask2;     // set just the second pin
-  waitfunc(t1_ahead);   // wait a fraction of t
-  PORTB = 0;            // reset both
-  waitfunc(t2_behind);
+  cycle_func();
 }
 
 void parseInput(String received) {
@@ -74,17 +68,51 @@ void parseInput(String received) {
   else if(received.startsWith("p")) {
     // here setting phase
     value_read = received.substring(1).toInt();
-    if(value_read >= 0 && value_read <=180) {
-      phase_diff = value_read * 10000 / 180;
+    value_read = value_read % 360;
+    if(value_read >= 0) {
+      if(value_read >= 0 && value_read <=180) {
+        phase_diff = value_read * 10000 / 180;
+        cycle_func = &pin1_first;
+        setTimes();
+      }
+
+      else if(value_read > 180 && value_read < 360) {
+        phase_diff = (360 - value_read) * 10000 / 180;
+        cycle_func = &pin2_first;
+        setTimes();
+      }
       Serial.println(String("updated phase diff: ") + String(value_read) + String(" deg"));
-      setTimes();
     }
   }
 }
 
 inline void setTimes() {
-  t1_ahead = t * phase_diff / 10000;
-  t2_behind = t - t1_ahead;
+  t_ahead = t * phase_diff / 10000;
+  t_behind = t - t_ahead;
+}
+
+inline void pin1_first() {
+  // this is called if phase_diff is in [0, 180] degrees
+  PORTB = pinmask;      // set pin 1
+  waitfunc(t_ahead);    // wait a fraction of t
+  PORTB = bitmask;      // set both
+  waitfunc(t_behind);   // wait the rest of t
+  PORTB = pinmask2;     // set just the second pin
+  waitfunc(t_ahead);    // wait a fraction of t
+  PORTB = 0;            // reset both
+  waitfunc(t_behind);
+}
+
+inline void pin2_first() {
+  // this is called if phase_diff is in (180, 360) degrees
+  PORTB = pinmask2;     // set pin 2
+  waitfunc(t_ahead);    // wait a fraction of t
+  PORTB = bitmask;      // set both
+  waitfunc(t_behind);   // wait the rest of t
+  PORTB = pinmask;      // set just pin 1
+  waitfunc(t_ahead);    // wait a fraction of t
+  PORTB = 0;            // reset both
+  waitfunc(t_behind);
 }
 
 inline void myDelayMicroseconds(unsigned long us) {
