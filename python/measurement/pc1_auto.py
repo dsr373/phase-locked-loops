@@ -12,8 +12,8 @@ datadir = 'data/pc1/'
 
 # the frequencies to test
 frequencies = [(10**i) for i in range(1, 6)]
-phase_shifts = np.arange(0, 361, 5)
-numRuns = 10
+phase_shifts = np.arange(0, 361, 45)
+numRuns = 2
 
 # the output data in memory:
 b_means = {}    # dict of tuples. each tuple has 2 arrays: 
@@ -27,7 +27,7 @@ ps.setSimpleTrigger('A', 1.0, 'Falling', timeout_ms=100, enabled=True)
 
 # open the data file
 fout = open(datadir + 'run1.tsv', 'w')
-fout.write('i\tf_expected (Hz)\tf_measured (Hz)\tmean A (V)\tmean B (V)\n')
+fout.write('i\tf_expected (Hz)\tphase_diff (deg)\tf_measured (Hz)\tmean A (V)\tmean B (V)\n')
 
 for (fid, f) in enumerate(frequencies):
     print('\n\n' + sep*3)
@@ -77,7 +77,7 @@ for (fid, f) in enumerate(frequencies):
 
             # save the processed data
             print('FrequencyA = %f Hz;\tmeanA = %f V;\tmeanB = %f V' % (f_measured, meanA, meanB))
-            fout.write('%d\t%.5f\t%.5f\t%.5f\t%.5f\n' % ((fid*len(phase_shifts) + phid)*numRuns+run, f, f_measured, meanA, meanB))
+            fout.write('%d\t%.5f\t%d\t%.5f\t%.5f\t%.5f\n' % ((fid*len(phase_shifts) + phid)*numRuns+run, f, phase, f_measured, meanA, meanB))
         
         # output results at this phase
         mean_at_this_phase = np.mean(at_this_phase)
@@ -99,11 +99,11 @@ fout.close()
 fig, ax = plt.subplots(figsize=(12,8))
 matplotlib.rcParams.update({'errorbar.capsize': 5})
 ax.set_title('Output of phase comparator 1', fontsize=15)
-ax.set_xlabel(r'$Phase difference (^\\circ)$', fontsize=15)
+ax.set_xlabel('Phase difference (deg)', fontsize=15)
 ax.set_ylabel('Average output (V)', fontsize=15)
-ax.set_xscale('log')
 
-for key in b_means.keys():
-    ax.errorbar(phase_shifts, b_means[key][0], yerr=b_means[key][1], fmt='+', markersize=15, label=('%.1f Hz' % key))
+for key in frequencies:
+    ax.errorbar(phase_shifts, b_means[key][0], yerr=b_means[key][1], fmt='+', markersize=15, label=('%.1e Hz' % key))
 
+ax.legend()
 plt.show()
