@@ -22,7 +22,7 @@ configure_channel(ps, 'A')
 configure_channel(ps, 'B')
 ps.setSimpleTrigger('A', 1.0, 'Falling', timeout_ms=100, enabled=True)
 
-(sampling_interval, nSamples, maxSamples) = alt_configure_sampling(ps, 2*half_p_us/1e6)
+(sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 2*half_p_us/1e6, multiplicity=10)
 
 dataA = getData(ps, nSamples, channel='A')
 dataB = getData(ps, nSamples, channel='B')
