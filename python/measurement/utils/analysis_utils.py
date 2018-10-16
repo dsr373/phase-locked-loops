@@ -32,4 +32,4 @@ def calc_frequency(freqs, raw_spectrum):
     # interpolate
     poly = interpolate.BarycentricInterpolator(xs, ys)
     res = optimize.fmin(lambda x : -poly(x), freqs[i], disp=False)
-    return abs(res)
+    return abs(res[0])
