@@ -12,8 +12,8 @@ datadir = 'data/pc1/'
 
 # the frequencies to test
 frequencies = [(10**i) for i in range(1, 6)]
-phase_shifts = np.arange(0, 361, 45)
-numRuns = 2
+phase_shifts = np.arange(0, 361, 5)
+numRuns = 10
 
 # the output data in memory:
 b_means = {}    # dict of tuples. each tuple has 2 arrays: 
