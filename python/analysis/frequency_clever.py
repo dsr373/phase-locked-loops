@@ -14,6 +14,7 @@ root = def_input('waveform file root', default='waveform')
 for filename in os.listdir('data/freq_test/'):
     if filename.startswith(root):
         fin = open(directory + filename)
+        print(filename)
         
         exp_f = float(filename[len(root):-4])
         expected_fs.append(exp_f)
