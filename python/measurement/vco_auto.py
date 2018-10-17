@@ -9,13 +9,13 @@ from utils.gui_utils import set_as_freq, set_as_time, def_input
 fontsize = 20
 
 # set constants
-mult = int(def_input('Number of cycles', default=50))
+mult = int(def_input('Number of cycles', default=25))
 # set expected frequency of Arduino
-frequency = 980
+frequency = 10000
 voltages = np.linspace(1, 5, num=101)
 
-data_dir = def_input('Data directory', default='data/pwm/')
-name_root = def_input('Filename root', default='pwm')
+data_dir = def_input('Data directory', default='data/vco/')
+name_root = def_input('Filename root', default='vco')
 fout = open(data_dir + name_root + '.tsv', 'w')
 wvout = open('%swaveforms/%s_wv.csv' % (data_dir, name_root), 'w')
 
@@ -24,7 +24,8 @@ fout.write('expected V\tf_A (Hz)\tV_A\tsigma_V_A\tf_B (Hz)\tV_B\tsigma_V_B\n')
 # fire up the scope
 ps = open_pico()
 configure_channel(ps, 'A')
-ps.setSimpleTrigger('A', 1.0, 'Falling', timeout_ms=100, enabled=True)
+configure_channel(ps, 'B')
+ps.setSimpleTrigger('B', 1.0, 'Falling', timeout_ms=100, enabled=True)
 
 (sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 1/frequency, multiplicity=mult)
 
@@ -61,7 +62,6 @@ for v in voltages:
     print("Sending stuff to ARDUINO")
     duty_cycle = v * 255 / 5
     send_command(duty_cycle=duty_cycle)
-    configure_channel(ps, 'B', VRange=2*v)
 
     # measure
     dataA = getData(ps, nSamples, channel='A')
@@ -81,7 +81,7 @@ for v in voltages:
     print("FrequencyA = %.4e Hz;\tv_A = %f +/- %f V" % (freqA, meanA, sigA))
     print("FrequencyB = %.4e Hz;\tv_B = %f +/- %f V" % (freqB, meanB, sigB))
     fout.write('%.3f\t%.4f\t%.5f\t%.5f\t%.4f\t%.5f\t%.5f\n' % (v, freqA, meanA, sigA, freqB, meanB, sigB))
-    wvout.write('expected voltage = %.3f V\n' % v)
+    wvout.write('input voltage = %.3f V\n' % v)
     wvout.write('A\n' + ', '.join(map(str, dataA)) + '\n\n')
     wvout.write('B\n' + ', '.join(map(str, dataB)) + '\n\n')
 
