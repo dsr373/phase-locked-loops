@@ -34,7 +34,7 @@ plt.tight_layout()
 fig, [ax, ax1] = plt.subplots(nrows=2, ncols=1, figsize=(12,9))
 set_as_time(ax, fontsize=fontsize)
 set_as_freq(ax1, fontsize=fontsize)
-ax.set_ylim(top=7, bottom=2)
+ax.set_ylim(top=7, bottom=-2)
 ax1.set_xlim(left=-4*frequency, right=4*frequency)
 
 # make default plots
