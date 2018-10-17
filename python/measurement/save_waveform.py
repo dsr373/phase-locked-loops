@@ -6,6 +6,8 @@ from utils.serial_utils import send_command
 from utils.analysis_utils import calc_frequency
 from utils.gui_utils import set_as_freq, set_as_time, def_input
 
+fontsize = 20
+
 # set constants
 frequency = float(def_input('Frequency in Hz', default=50))
 phase_diff = int(def_input('Phase difference in deg', default=90))
@@ -40,19 +42,19 @@ print("FrequencyB = %f Hz" % calc_frequency(freqs, spectrumB))
 
 # plot the real signal
 t = np.linspace(0, sampling_interval*nSamples, num=nSamples)
-fig, [ax, ax1] = plt.subplots(nrows=2, ncols=1, figsize=(12,9))
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(12,8))
 
-set_as_time(ax)
+set_as_time(ax, fontsize=fontsize)
 ax.plot(t, dataA, label='A')
 ax.plot(t, dataB, label='B')
-ax.legend()
+ax.legend(fontsize=fontsize)
 
 # plot the FT'ed signal
-set_as_freq(ax1)
-ax1.plot(freqs, abs(spectrum), label='A')
-ax1.plot(freqs, abs(spectrumB), label='B')
-ax1.set_xlim(left=-4*frequency, right=4*frequency)
-ax1.legend()
+# set_as_freq(ax1)
+# ax1.plot(freqs, abs(spectrum), label='A')
+# ax1.plot(freqs, abs(spectrumB), label='B')
+# ax1.set_xlim(left=-4*frequency, right=4*frequency)
+# ax1.legend()
 
 plt.tight_layout()
 plt.show()
@@ -69,4 +71,4 @@ if 'a' in saveopt or 'b' in saveopt:
 
 if 'f' in saveopt:
     outfile = raw_input('figure filename: ')
-    fig.savefig('docs/'+outfile, bbox_inches='tight')
+    fig.savefig('docs/%s.pdf' % outfile, bbox_inches='tight')
