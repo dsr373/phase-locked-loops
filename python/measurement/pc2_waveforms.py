@@ -14,8 +14,11 @@ mult = int(def_input('Number of cycles', default=10))
 phase_diffs = [0, 30, 45, 60, 90, 135, 170, 180, 190, 225, 270, 315, 350]
 half_p_us = 5e5/frequency  # in microseconds
 
-directory = 'docs/pc2/'
+fig_dir = 'docs/pc2/'
+data_dir = 'data/pc2/waveforms/'
 name_root = def_input('Filename root:', default='deg')
+
+fout = open(data_dir+name_root+'_wv.csv', 'w')
 
 # send half-period to arduino
 print("Sending stuff to ARDUINO")
@@ -36,6 +39,10 @@ for phase in phase_diffs:
 
     dataA = getData(ps, nSamples, channel='A')
     dataB = getData(ps, nSamples, channel='B')
+
+    fout.write('phase difference = %d deg\n' % phase)
+    fout.write('A\n' + ', '.join(map(str, dataA)) + '\n\n')
+    fout.write('B\n' + ', '.join(map(str, dataB)) + '\n\n')
 
     # # do the FT
     # spectrum = np.fft.fft(np.array(dataA), nSamples)
@@ -61,4 +68,4 @@ for phase in phase_diffs:
     # ax1.legend()
 
     plt.tight_layout()
-    fig.savefig('%s%s%d.pdf' % (directory, name_root, phase), bbox_inches='tight')
+    fig.savefig('%s%s%d.pdf' % (fig_dir, name_root, phase), bbox_inches='tight')
