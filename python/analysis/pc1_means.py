@@ -3,12 +3,14 @@ import matplotlib.pyplot as plt
 import matplotlib
 import csv
 
+from ..measurement.utils.gui_utils import def_input
+
 # the measurements is a dictionary from the frequency to a dict
 # the inner dict is from the phaseshift to an array of mean Bs
 measurements = {}
 results = {}
 
-with open('data/pc1/run1.tsv') as fin:
+with open('data/pc2/run2.tsv') as fin:
     reader = csv.reader(fin, delimiter='\t')
     reader.next()   # skip first row - those are the headings
 
@@ -32,7 +34,7 @@ for freq in measurements.keys():
         results[freq][phase] = (np.mean(measurements[freq][phase]), np.std(measurements[freq][phase]))
 
 # all_freqs = sorted(list(results.keys()))
-all_freqs = [1e1, 1e2, 1e3]
+all_freqs = sorted(results.keys())
 
 fig, ax = plt.subplots(figsize=(12, 8))
 matplotlib.rcParams.update({'errorbar.capsize': 5})
@@ -52,3 +54,8 @@ ax.set_ylabel('Average output (V)', fontsize=15)
 ax.legend()
 
 plt.show()
+
+saveopt = def_input('Save figure? (y/n)', default='n')
+if saveopt == 'y':
+    figname = raw_input('file name: ')
+    fig.savefig('docs/%s.pdf' % figname, bbox_inches='tight')

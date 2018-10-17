@@ -7,10 +7,10 @@ from utils.serial_utils import send_command
 from utils.analysis_utils import calc_frequency
 
 sep = '=' * 20
-datadir = 'data/pc1/'
+datadir = 'data/pc2/'
 
 # the frequencies to test
-frequencies = [(10**i) for i in range(1, 6)]
+frequencies = [(10**i) for i in range(1, 5)]
 phase_shifts = np.arange(0, 361, 5)
 numRuns = 10
 
@@ -25,7 +25,7 @@ configure_channel(ps, 'B')
 ps.setSimpleTrigger('A', 1.0, 'Falling', timeout_ms=100, enabled=True)
 
 # open the data file
-fout = open(datadir + 'run1.tsv', 'w')
+fout = open(datadir + 'run2.tsv', 'w')
 fout.write('i\tf_expected (Hz)\tphase_diff (deg)\tf_measured (Hz)\tmean A (V)\tmean B (V)\n')
 
 for (fid, f) in enumerate(frequencies):
