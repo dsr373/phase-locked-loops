@@ -5,7 +5,6 @@ import numpy as np
 from utils.pico_utils import open_pico, configure_channel, configure_sampling, getData
 from utils.serial_utils import send_command
 from utils.analysis_utils import calc_frequency
-from utils.plotting_utils import set_as_freq, set_as_time
 
 sep = '=' * 20
 datadir = 'data/pc1/'
