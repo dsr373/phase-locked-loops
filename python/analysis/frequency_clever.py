@@ -4,14 +4,18 @@ import matplotlib
 import os
 
 from ..measurement.utils.analysis_utils import calc_frequency
+from ..measurement.utils.gui_utils import def_input
 
 expected_fs, measured_fs, sigmas = [], [], []
 
+directory = def_input('directory to scan', default='data/freq_test/')
+root = def_input('waveform file root', default='waveform')
+
 for filename in os.listdir('data/freq_test/'):
-    if filename.startswith('waveform'):
-        fin = open('data/freq_test/' + filename)
+    if filename.startswith(root):
+        fin = open(directory + filename)
         
-        exp_f = float(filename[8:-4])
+        exp_f = float(filename[len(root):-4])
         expected_fs.append(exp_f)
 
         sampling_interval = fin.readline().split(' = ')[1]
@@ -49,7 +53,6 @@ ax.set_yscale('log')
 ax.set_xlabel('Expected Frequency (Hz)', fontsize=20)
 ax.set_ylabel('Relative error in produced frequency', fontsize=20)
 ax.tick_params(labelsize=18)
-fig.savefig('docs/arduino_clever_rel.pdf', bbox_inches='tight')
 
 # and an absolute plot
 fig1, ax1 = plt.subplots(figsize=(12, 8))
@@ -60,6 +63,11 @@ ax1.set_yscale('log')
 ax1.set_xlabel('Expected Frequency (Hz)', fontsize=20)
 ax1.set_ylabel('Error in produced frequency (Hz)', fontsize=20)
 ax1.tick_params(labelsize=18)
-fig1.savefig('docs/arduino_clever.pdf', bbox_inches='tight')
 
 plt.show()
+
+saveopt = def_input('Save figures? (y/n)', default='n')
+if saveopt == 'y':
+    name_root = def_input('Filename root?', default='arduino_freq')
+    fig.savefig('docs/%s_rel.pdf' % name_root, bbox_inches='tight')
+    fig1.savefig('docs/%s_abs.pdf' % name_root, bbox_inches='tight')
