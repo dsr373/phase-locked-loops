@@ -39,15 +39,27 @@ print(type(expected_fs[0]), type(measured_fs[0]), type(sigmas[0]))
 
 expected_fs, measured_fs, sigmas = np.array(expected_fs), np.array(measured_fs), np.array(sigmas)
 
+# a relative errors plot
 fig, ax = plt.subplots(figsize=(12, 8))
 matplotlib.rcParams.update({'errorbar.capsize': 5})
 ax.errorbar(expected_fs, abs(measured_fs-expected_fs)/expected_fs, yerr=sigmas/expected_fs, fmt='+', markersize=15)
 
 ax.set_xscale('log')
 ax.set_yscale('log')
+ax.set_xlabel('Expected Frequency (Hz)', fontsize=20)
+ax.set_ylabel('Relative error in produced frequency', fontsize=20)
+ax.tick_params(labelsize=18)
+fig.savefig('docs/arduino_clever_rel.pdf', bbox_inches='tight')
 
-ax.set_title('Characteristic of Arduino as signal generator', fontsize=15)
-ax.set_xlabel('Expected Frequency (Hz)', fontsize=15)
-ax.set_ylabel('Relative error in produced frequency', fontsize=15)
+# and an absolute plot
+fig1, ax1 = plt.subplots(figsize=(12, 8))
+ax1.errorbar(expected_fs, abs(measured_fs-expected_fs), yerr=sigmas, fmt='+', markersize=15)
+
+ax1.set_xscale('log')
+ax1.set_yscale('log')
+ax1.set_xlabel('Expected Frequency (Hz)', fontsize=20)
+ax1.set_ylabel('Error in produced frequency (Hz)', fontsize=20)
+ax1.tick_params(labelsize=18)
+fig1.savefig('docs/arduino_clever.pdf', bbox_inches='tight')
 
 plt.show()
