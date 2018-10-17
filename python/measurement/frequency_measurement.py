@@ -14,8 +14,9 @@ configure_channel(ps, 'A')
 ps.setSimpleTrigger('A', 1.0, 'Falling', timeout_ms=100, enabled=True)
 
 # the frequencies to test
-frequencies = [(2**i) for i in range(4, 17)]
-numRuns = 5
+frequencies = [b*(10**j) for b in (1, 2, 5) for j in range(1, 6)]
+print('Testing at: %s' % frequencies)
+numRuns = 20
 mult = 100
 
 # open the data file
@@ -34,7 +35,7 @@ for (fid, f) in enumerate(frequencies):
 
     (sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 2*half_p_us/1e6, multiplicity=mult)
 
-    wvout.write('sampling_interval = %.4f ms\n\n' % (sampling_interval * 1e3))
+    wvout.write('sampling_interval = %.5f us\n\n' % (sampling_interval * 1e6))
 
     for run in range(numRuns):
         # read signal

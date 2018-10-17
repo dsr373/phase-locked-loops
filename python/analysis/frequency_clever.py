@@ -20,7 +20,7 @@ for filename in os.listdir('data/freq_test/'):
         expected_fs.append(exp_f)
 
         sampling_interval = fin.readline().split(' = ')[1]
-        sampling_interval = 1e-3 * float(sampling_interval.split(' ')[0])
+        sampling_interval = 1e-6 * float(sampling_interval.split(' ')[0])
         
         concat_data = []
 
