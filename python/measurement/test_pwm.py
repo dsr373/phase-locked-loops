@@ -13,9 +13,11 @@ sep = '=' * 15
 # set constants
 mult = int(def_input('Number of cycles', default=20))
 nRuns = int(def_input('Number of runs', default=10))
+step_size = int(def_input('Step size', default=2))
 # set expected frequency of Arduino
 frequency = 490
-voltages = np.linspace(0.05, 5, num=100)
+pwm_vals = np.arange(0, 255, step_size)
+# voltages = np.linspace(0.05, 5, num=100)
 
 data_dir = def_input('Data directory', default='data/pwm/')
 name_root = def_input('Filename root', default='pwm')
@@ -59,12 +61,12 @@ specB, = ax1.plot(freqs, abs(spectrumB), label='B')
 
 plt.tight_layout()
 
-for v in voltages:
+for duty_cycle in pwm_vals:
+    v = 5.0 * duty_cycle / 255
     print(sep + ' Testing at %.2f V ' % v + sep)
 
     # send duty cycle to arduino
     print("Sending stuff to ARDUINO")
-    duty_cycle = int(v * 255 / 5)
     send_command(duty_cycle=duty_cycle)
     
     # configure scope channel

@@ -18,7 +18,7 @@ def calc_frequency(freqs, raw_spectrum, verbose=False):
     
     spectrum = np.abs(raw_spectrum)
     # find the location of the top frequency, but remove 0 as it's not relevant
-    i = np.argmax(spectrum[1:]) + 1
+    i = np.argmax(spectrum[1:-1]) + 1
     # take di points either side of x. 3 points => can interpolate a quadratic
     di = 1
     idxs = [i-j for j in range(di, 0, -1)] + [i] + [i+j+1 for j in range(di)]
