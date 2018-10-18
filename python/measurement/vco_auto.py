@@ -11,11 +11,11 @@ fontsize = 20
 sep = '=' * 15
 
 # set constants
+frequency = float(def_input('Expected frequency (Hz)', default=15e3))
 mult = int(def_input('Number of cycles', default=50))
 nRuns = int(def_input('Number of runs', default=10))
 step_size = int(def_input('Step size', default=2))
 # set expected frequency of Arduino
-frequency = 20e3
 pwm_vals = np.arange(0, 255, step_size)
 
 data_dir = def_input('Data directory', default='data/vco/')
