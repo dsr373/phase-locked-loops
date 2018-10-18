@@ -7,6 +7,7 @@ void setup() {
   // put your setup code here, to run once:
   pinMode(pin, OUTPUT);
   analogWrite(pin, duty_cycle);
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -28,7 +29,7 @@ inline void parse_input(String read_string) {
     if(read_value <= 255 && read_value >= 0) {
       duty_cycle = read_value;
       analogWrite(pin, duty_cycle);
-      Serial.write(String("updated duty cycle: ") + String(duty_cycle));
+      Serial.println(String("updated duty cycle: ") + String(duty_cycle));
     }
   }
 }

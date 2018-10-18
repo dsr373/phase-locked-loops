@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from time import sleep
 
 from utils.pico_utils import open_pico, configure_channel, configure_sampling, getData
 from utils.serial_utils import send_command
@@ -7,12 +8,14 @@ from utils.analysis_utils import calc_frequency
 from utils.gui_utils import set_as_freq, set_as_time, def_input
 
 fontsize = 20
+sep = '=' * 15
 
 # set constants
-mult = int(def_input('Number of cycles', default=50))
+mult = int(def_input('Number of cycles', default=20))
+nRuns = int(def_input('Number of runs', default=10))
 # set expected frequency of Arduino
-frequency = 980
-voltages = np.linspace(1, 5, num=101)
+frequency = 490
+voltages = np.linspace(0.05, 5, num=100)
 
 data_dir = def_input('Data directory', default='data/pwm/')
 name_root = def_input('Filename root', default='pwm')
@@ -26,16 +29,16 @@ ps = open_pico()
 configure_channel(ps, 'A')
 ps.setSimpleTrigger('A', 1.0, 'Falling', timeout_ms=100, enabled=True)
 
-(sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 1/frequency, multiplicity=mult)
+(sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 1.0/frequency, multiplicity=mult)
 
 # set up the plot
 plt.ion()
-plt.tight_layout()
 fig, [ax, ax1] = plt.subplots(nrows=2, ncols=1, figsize=(12,9))
 set_as_time(ax, fontsize=fontsize)
 set_as_freq(ax1, fontsize=fontsize)
 ax.set_ylim(top=7, bottom=-2)
 ax1.set_xlim(left=-4*frequency, right=4*frequency)
+ax1.set_ylim(top=1e4, bottom=-10)
 
 # make default plots
 t = np.linspace(0, sampling_interval*nSamples, num=nSamples)
@@ -54,43 +57,54 @@ lineB, = ax.plot(t, dataB, label='B')
 specA, = ax1.plot(freqs, abs(spectrumA), label='A')
 specB, = ax1.plot(freqs, abs(spectrumB), label='B')
 
-plt.show()
+plt.tight_layout()
 
 for v in voltages:
+    print(sep + ' Testing at %.2f V ' % v + sep)
+
     # send duty cycle to arduino
     print("Sending stuff to ARDUINO")
-    duty_cycle = v * 255 / 5
+    duty_cycle = int(v * 255 / 5)
     send_command(duty_cycle=duty_cycle)
-    configure_channel(ps, 'B', VRange=2*v)
-
-    # measure
-    dataA = getData(ps, nSamples, channel='A')
-    dataB = getData(ps, nSamples, channel='B')
     
-    meanA = np.mean(dataA)
-    meanB = np.mean(dataB)
-    sigA = np.std(dataA)
-    sigB = np.std(dataB)
+    # configure scope channel
+    if v < 1:
+        vRange = 1
+    else:
+        vRange = 2*v
+    configure_channel(ps, 'B', VRange=vRange)
+    sleep(0.5)
 
-    # do the FT
-    spectrumA = np.fft.fft(np.array(dataA), nSamples)
-    spectrumB = np.fft.fft(np.array(dataB), nSamples)
-    freqA = calc_frequency(freqs, spectrumA)
-    freqB = calc_frequency(freqs, spectrumB)
+    # do the runs
+    for run in range(nRuns):
+        # measure
+        dataA = getData(ps, nSamples, channel='A')
+        dataB = getData(ps, nSamples, channel='B')
+        
+        meanA = np.mean(dataA)
+        meanB = np.mean(dataB)
+        sigA = np.std(dataA)
+        sigB = np.std(dataB)
 
-    print("FrequencyA = %.4e Hz;\tv_A = %f +/- %f V" % (freqA, meanA, sigA))
-    print("FrequencyB = %.4e Hz;\tv_B = %f +/- %f V" % (freqB, meanB, sigB))
-    fout.write('%.3f\t%.4f\t%.5f\t%.5f\t%.4f\t%.5f\t%.5f\n' % (v, freqA, meanA, sigA, freqB, meanB, sigB))
-    wvout.write('expected voltage = %.3f V\n' % v)
-    wvout.write('A\n' + ', '.join(map(str, dataA)) + '\n\n')
-    wvout.write('B\n' + ', '.join(map(str, dataB)) + '\n\n')
+        # do the FT
+        spectrumA = np.fft.fft(np.array(dataA), nSamples)
+        spectrumB = np.fft.fft(np.array(dataB), nSamples)
+        freqA = calc_frequency(freqs, spectrumA)
+        freqB = calc_frequency(freqs, spectrumB)
 
-    # replot realtime
-    lineA.set_ydata(dataA)
-    lineB.set_ydata(dataB)
-    specA.set_ydata(spectrumA)
-    specB.set_ydata(spectrumB)
-    plt.pause(0.01)
+        print("FrequencyA = %.4e Hz;\tv_A = %f +/- %f V" % (freqA, meanA, sigA))
+        print("FrequencyB = %.4e Hz;\tv_B = %f +/- %f V" % (freqB, meanB, sigB))
+        fout.write('%.3f\t%.4f\t%.5f\t%.5f\t%.4f\t%.5f\t%.5f\n' % (v, freqA, meanA, sigA, freqB, meanB, sigB))
+        wvout.write('expected voltage = %.3f V\n' % v)
+        wvout.write('A\n' + ', '.join(map(str, dataA)) + '\n\n')
+        wvout.write('B\n' + ', '.join(map(str, dataB)) + '\n\n')
+
+        # replot realtime
+        lineA.set_ydata(dataA)
+        lineB.set_ydata(dataB)
+        specA.set_ydata(spectrumA)
+        specB.set_ydata(spectrumB)
+        plt.pause(0.01)
 
 fout.close()
 wvout.close()
