@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from time import sleep
 
 from utils.pico_utils import open_pico, configure_channel, configure_sampling, alt_configure_sampling, getData
 from utils.serial_utils import send_command
@@ -10,8 +11,8 @@ fontsize = 20
 
 # set constants
 frequency = float(def_input('Frequency in Hz', default=50))
-mult = int(def_input('Number of cycles', default=10))
-phase_diffs = [0, 30, 45, 60, 90, 135, 170, 180, 190, 225, 270, 315, 350]
+mult = int(def_input('Number of cycles', default=5))
+phase_diffs = [0, 45, 90, 135, 170, 180, 190, 225, 270, 315, 350]
 half_p_us = 5e5/frequency  # in microseconds
 
 fig_dir = 'docs/pc2/'
@@ -36,6 +37,7 @@ t = np.linspace(0, sampling_interval*nSamples, num=nSamples)
 
 for phase in phase_diffs:
     send_command(phase_diff=phase)
+    sleep(1)
 
     dataA = getData(ps, nSamples, channel='A')
     dataB = getData(ps, nSamples, channel='B')
