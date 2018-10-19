@@ -31,6 +31,7 @@ configure_channel(ps, 'B')
 ps.setSimpleTrigger('B', 1.0, 'Falling', timeout_ms=100, enabled=True)
 
 (sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 1.0/frequency, multiplicity=mult)
+wvout.write('sampling interval = {0:.5f} us\n'.format(sampling_interval * 1e6))
 
 # set up the plot
 plt.ion()

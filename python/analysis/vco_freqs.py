@@ -5,6 +5,8 @@ import csv
 
 from ..measurement.utils.gui_utils import def_input
 
+FONTSIZE = 20
+
 # the measurements are dictionaries from the expected_v to arrays of the measured values
 v_in = {}
 f_out = {}
@@ -38,10 +40,11 @@ fig, ax = plt.subplots(figsize=(12, 8))
 matplotlib.rcParams.update({'errorbar.capsize': 5})
 ax.errorbar(xs, ys, yerr=sigY, xerr=sigX, fmt='+', markersize=8)
 
-ax.set_title('Output of VCO', fontsize=20)
-ax.set_xlabel('Input Voltage (V)', fontsize=20)
-ax.set_ylabel('Output Frequency (Hz)', fontsize=20)
-
+ax.set_title('Output of VCO', fontsize=FONTSIZE)
+ax.set_xlabel('Input Voltage (V)', fontsize=FONTSIZE)
+ax.set_ylabel('Output Frequency (Hz)', fontsize=FONTSIZE)
+ax.tick_params(labelsize=FONTSIZE-4)
+ax.set_xlim(left=-0.1, right=5.1)
 plt.show()
 
 saveopt = def_input('Save figure? (y/n)', default='n')
