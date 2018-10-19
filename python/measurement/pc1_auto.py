@@ -5,14 +5,18 @@ import numpy as np
 from utils.pico_utils import open_pico, configure_channel, configure_sampling, getData
 from utils.serial_utils import send_command
 from utils.analysis_utils import calc_frequency
+from utils.gui_utils import set_as_time
 
 sep = '=' * 20
-datadir = 'data/pc2/'
+DATADIR = 'data/pc2/'
+NAME_SUFFIX = '_t'
+FONTSIZE = 20
+
 
 # the frequencies to test
-frequencies = [(10**i) for i in range(1, 5)]
+frequencies = [(10**i) for i in [2, 3]]
 phase_shifts = np.arange(0, 361, 5)
-numRuns = 10
+numRuns = 20
 
 # the output data in memory:
 b_means = {}    # dict of tuples. each tuple has 2 arrays: 
@@ -25,9 +29,23 @@ configure_channel(ps, 'B')
 ps.setSimpleTrigger('A', 1.0, 'Falling', timeout_ms=100, enabled=True)
 
 # open the data file
-fout = open(datadir + 'run2.tsv', 'w')
+fout = open(DATADIR + 'run%s.tsv' % NAME_SUFFIX, 'w')
 fout.write('i\tf_expected (Hz)\tphase_diff (deg)\tf_measured (Hz)\tmean A (V)\tmean B (V)\n')
 
+# set up the plot
+plt.ion()
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(12,8))
+set_as_time(ax, fontsize=FONTSIZE)
+ax.set_ylim(top=7, bottom=-2)
+
+# pre plot
+t = np.linspace(0, 0.1, num=100)
+dataA = np.zeros(len(t))
+dataB = np.zeros(len(t))
+lineA, = ax.plot(t, dataA, label='A')
+lineB, = ax.plot(t, dataB, label='B')
+
+# main loop
 for (fid, f) in enumerate(frequencies):
     print('\n\n' + sep*3)
     print('%s %d. testing at %.1f Hz %s' % (sep, fid, f, sep))
@@ -35,14 +53,21 @@ for (fid, f) in enumerate(frequencies):
 
     b_means[f] = ([], [])
 
-    wvout = open(datadir + 'waveforms/waveform%d.csv' % (int(f)), 'w')
+    wvout = open(DATADIR + 'waveforms/waveform%s%d.csv' % (NAME_SUFFIX, int(f)), 'w')
 
     # send half-period to arduino
     half_p_us = 5e5/f  # in microseconds
     print("Sending stuff to ARDUINO")
     send_command(half_p=half_p_us)
 
+    # set sampling and rescale the plot
     (sampling_interval, nSamples, maxSamples) = configure_sampling(ps, 2*half_p_us/1e6, multiplicity=20)
+    t = np.linspace(0, sampling_interval*nSamples, num=nSamples)
+    ax.lines.pop(0)
+    ax.lines.pop(0)
+    lineA, = ax.plot(t, np.zeros(len(t)), color='C0', label='A')
+    lineB, = ax.plot(t, np.zeros(len(t)), color='C1', label='B')
+    ax.set_xlim(left=t[0], right=t[-1])
 
     wvout.write('sampling_interval = %.5f ms\n\n' % (sampling_interval * 1e3))
 
@@ -60,6 +85,11 @@ for (fid, f) in enumerate(frequencies):
             # read signal
             dataA = getData(ps, nSamples, channel='A')
             dataB = getData(ps, nSamples, channel='B')
+
+            # replot
+            lineA.set_ydata(dataA)
+            lineB.set_ydata(dataB)
+            plt.pause(0.01)
 
             # save the output waveforms
             wvout.write(', '.join(map(str, dataB)) + '\n')
@@ -94,6 +124,8 @@ for (fid, f) in enumerate(frequencies):
 ps.stop()
 ps.close()
 fout.close()
+plt.close(fig)
+plt.ioff()
 
 fig, ax = plt.subplots(figsize=(12,8))
 matplotlib.rcParams.update({'errorbar.capsize': 5})
